@@ -6,17 +6,11 @@ export const metadata: Metadata = {
 }
 
 async function getUsers() {
-  // Construct the full URL for the API endpoint
-  // In a real application, you might want to use an environment variable for the base URL
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/users`, {
-    cache: 'no-store', // Ensures fresh data on every request, adjust as needed
-  });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/users`);
 
   if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    // Or return a specific error state
     console.error('Failed to fetch users:', await res.text());
-    return null; // Or throw an error
+    return null;
   }
   return res.json();
 }

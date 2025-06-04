@@ -5,7 +5,34 @@ export const metadata: Metadata = {
   title: 'Habit Wars',
 }
 
-export default function Home() {
+async function getUsers() {
+  // Construct the full URL for the API endpoint
+  // In a real application, you might want to use an environment variable for the base URL
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/users`, {
+    cache: 'no-store', // Ensures fresh data on every request, adjust as needed
+  });
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    // Or return a specific error state
+    console.error('Failed to fetch users:', await res.text());
+    return null; // Or throw an error
+  }
+  return res.json();
+}
+
+// Define a type for your user data for better type safety
+// This should match the type defined in your API route
+type User = {
+  id: number;
+  name: string;
+  email: string;
+};
+
+export default async function Home() {
+  const data = await getUsers();
+  const users = data?.users as User[] | undefined;
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -55,6 +82,28 @@ export default function Home() {
             Read our docs
           </a>
         </div>
+
+        {/* Display Users List */}
+        <section className="mt-12 w-full max-w-2xl">
+          <h2 className="text-2xl font-semibold mb-4 text-center sm:text-left">Users</h2>
+          {users && users.length > 0 ? (
+            <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4">
+              {users.map((user) => (
+                <li key={user.id} className="py-3 px-2 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                  <div>
+                    <p className="text-lg font-medium text-gray-900 dark:text-white">{user.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-gray-500 dark:text-gray-400">
+              {data ? 'No users found.' : 'Could not load users.'}
+            </p>
+          )}
+        </section>
+
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import HabitSection from '@/components/HabitSection'
+import ActionLog from '@/components/ActionLog'
 
 export const metadata: Metadata = {
   title: 'Habit Wars',
@@ -83,6 +84,7 @@ export default async function Home() {
           {/* Display Habits List */}
           <HabitSection habits={habits} users={users} habitsData={habitsData} />
         </div>
+        <ActionLog />
       </main>
     </div>
   );

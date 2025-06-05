@@ -29,6 +29,37 @@ type HabitSectionProps = {
 
 export default function HabitSection({ habits, users, habitsData }: HabitSectionProps) {
   const [showForm, setShowForm] = useState(false);
+  const [isLogging, setIsLogging] = useState<number | null>(null);
+
+  const handleLogAction = async (habitId: number, userId: number) => {
+    setIsLogging(habitId);
+    try {
+      const res = await fetch('/api/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          HabitID: habitId,
+          UserID: userId,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Something went wrong');
+      }
+
+      // Dispatch event to notify other components
+      window.dispatchEvent(new CustomEvent('actionAdded'));
+
+    } catch (err) {
+      console.error(err);
+      // You might want to show an error to the user here
+    } finally {
+      setIsLogging(null);
+    }
+  };
 
   return (
     <section>
@@ -50,13 +81,20 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
         ) : habits && habits.length > 0 ? (
           <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4">
             {habits.map((habit) => (
-              <li key={habit.id} className="py-3 px-2">
+              <li key={habit.id} className="py-3 px-2 flex justify-between items-center">
                 <div>
                   <p className="text-lg font-medium">{habit.Name}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     Cadence: {habit.Cadence}, Frequency: {habit.Frequency}
                   </p>
                 </div>
+                <button
+                  onClick={() => handleLogAction(habit.id, habit.UserID)}
+                  disabled={isLogging === habit.id}
+                  className="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                >
+                  {isLogging === habit.id ? 'Logging...' : 'Log'}
+                </button>
               </li>
             ))}
           </ul>

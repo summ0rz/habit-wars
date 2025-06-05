@@ -17,10 +17,14 @@ type Habit = {
   Frequency: number;
 };
 
+type HabitsData = {
+  habits: Habit[] | undefined;
+}
+
 type HabitSectionProps = {
   habits: Habit[] | undefined;
   users: User[] | undefined;
-  habitsData: any;
+  habitsData: HabitsData | null;
 };
 
 export default function HabitSection({ habits, users, habitsData }: HabitSectionProps) {

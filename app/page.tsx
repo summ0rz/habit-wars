@@ -6,21 +6,23 @@ export const metadata: Metadata = {
 }
 
 async function getUsers() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/users`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/users`, { cache: 'no-store' });
 
   if (!res.ok) {
-    console.error('Failed to fetch users:', await res.text());
-    return null;
+    const errorText = await res.text();
+    console.error('Failed to fetch users:', errorText);
+    return { error: `Could not load users. Status: ${res.status}` };
   }
   return res.json();
 }
 
 async function getHabits() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/habits`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/habits`, { cache: 'no-store' });
 
   if (!res.ok) {
-    console.error('Failed to fetch habits:', await res.text());
-    return null;
+    const errorText = await res.text();
+    console.error('Failed to fetch habits:', errorText);
+    return { error: `Could not load habits. Status: ${res.status}` };
   }
   return res.json();
 }
@@ -42,11 +44,13 @@ type Habit = {
 };
 
 export default async function Home() {
-  const usersData = await getUsers();
-  const users = usersData?.users as User[] | undefined;
+  const [usersData, habitsData] = await Promise.all([
+    getUsers(),
+    getHabits()
+  ]);
 
-  const habitsData = await getHabits();
-  const habits = habitsData?.habits as Habit[] | undefined;
+  const users = !usersData.error ? (usersData?.users as User[] | undefined) : undefined;
+  const habits = !habitsData.error ? (habitsData?.habits as Habit[] | undefined) : undefined;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-[family-name:var(--font-geist-sans)]">
@@ -56,7 +60,9 @@ export default async function Home() {
           {/* Display Users List */}
           <section>
             <h2 className="text-2xl font-semibold mb-4">Users</h2>
-            {users && users.length > 0 ? (
+            {usersData.error ? (
+              <p className="text-center text-red-500">{usersData.error}</p>
+            ) : users && users.length > 0 ? (
               <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4">
                 {users.map((user) => (
                   <li key={user.id} className="py-3 px-2">
@@ -69,7 +75,7 @@ export default async function Home() {
               </ul>
             ) : (
               <p className="text-center text-gray-500 dark:text-gray-400">
-                {usersData ? 'No users found.' : 'Could not load users.'}
+                No users found.
               </p>
             )}
           </section>

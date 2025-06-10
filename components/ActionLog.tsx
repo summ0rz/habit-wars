@@ -53,7 +53,7 @@ export default function ActionLog() {
         <section className="mt-8">
             <h2 className="text-2xl font-semibold mb-4">Recent Activity</h2>
             {actions.length > 0 ? (
-                <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4">
+                <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                     {actions.map((action) => (
                         <li key={action.id} className="py-3 px-2">
                             <p className="text-lg font-medium">

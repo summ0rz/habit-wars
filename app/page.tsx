@@ -56,15 +56,24 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-[family-name:var(--font-geist-sans)]">
       <main className="container mx-auto p-4 sm:p-8">
-        <h1 className="text-4xl font-bold mb-8 text-center">Habit Wars</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <h1 className="text-4xl font-bold mb-16 text-center">Habit Wars</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Display Users List */}
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Users</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold">Users</h2>
+              {/* This div is a spacer to match the height of the button in the habits section */}
+              <div
+                className="px-4 py-2 text-sm font-medium invisible"
+                aria-hidden="true"
+              >
+                Add Habit
+              </div>
+            </div>
             {usersData.error ? (
               <p className="text-center text-red-500">{usersData.error}</p>
             ) : users && users.length > 0 ? (
-              <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4">
+              <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                 {users.map((user) => (
                   <li key={user.id} className="py-3 px-2">
                     <div>

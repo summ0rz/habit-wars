@@ -79,7 +79,7 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
         {habitsData && 'error' in habitsData && habitsData.error ? (
           <p className="text-center text-red-500 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4">{habitsData.error}</p>
         ) : habits && habits.length > 0 ? (
-          <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700">
             {habits.map((habit) => (
               <li key={habit.id} className="py-3 px-2 flex justify-between items-center">
                 <div>
@@ -99,7 +99,7 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
             ))}
           </ul>
         ) : (
-          <div className="text-center text-gray-500 dark:text-gray-400 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4">
+          <div className="text-center text-gray-500 dark:text-gray-400 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700">
             No habits found.
           </div>
         )}

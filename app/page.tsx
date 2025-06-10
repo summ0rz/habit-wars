@@ -42,6 +42,7 @@ type Habit = {
   UserID: number;
   Cadence: 'daily' | 'weekly' | 'monthly';
   Frequency: number;
+  completedCount: number;
 };
 
 export default async function Home() {

@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import AddHabitForm from './AddHabitForm';
+import ProgressMeter from './ProgressMeter';
 
 type User = {
     id: number;
@@ -15,6 +17,7 @@ type Habit = {
   UserID: number;
   Cadence: 'daily' | 'weekly' | 'monthly';
   Frequency: number;
+  completedCount: number;
 };
 
 type HabitsData = {
@@ -30,6 +33,7 @@ type HabitSectionProps = {
 export default function HabitSection({ habits, users, habitsData }: HabitSectionProps) {
   const [showForm, setShowForm] = useState(false);
   const [isLogging, setIsLogging] = useState<number | null>(null);
+  const router = useRouter();
 
   const handleLogAction = async (habitId: number, userId: number) => {
     setIsLogging(habitId);
@@ -52,6 +56,7 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
 
       // Dispatch event to notify other components
       window.dispatchEvent(new CustomEvent('actionAdded'));
+      router.refresh();
 
     } catch (err) {
       console.error(err);
@@ -81,20 +86,22 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
         ) : habits && habits.length > 0 ? (
           <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700">
             {habits.map((habit) => (
-              <li key={habit.id} className="py-3 px-2 flex justify-between items-center">
-                <div>
+              <li key={habit.id} className="py-3 px-2">
+                <div className='flex justify-between items-center'>
                   <p className="text-lg font-medium">{habit.Name}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Cadence: {habit.Cadence}, Frequency: {habit.Frequency}
-                  </p>
+                  <button
+                    onClick={() => handleLogAction(habit.id, habit.UserID)}
+                    disabled={isLogging === habit.id}
+                    className="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                  >
+                    {isLogging === habit.id ? 'Logging...' : 'Log'}
+                  </button>
                 </div>
-                <button
-                  onClick={() => handleLogAction(habit.id, habit.UserID)}
-                  disabled={isLogging === habit.id}
-                  className="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-                >
-                  {isLogging === habit.id ? 'Logging...' : 'Log'}
-                </button>
+                <ProgressMeter
+                  currentValue={habit.completedCount}
+                  maxValue={habit.Frequency}
+                  cadence={habit.Cadence}
+                />
               </li>
             ))}
           </ul>

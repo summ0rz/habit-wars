@@ -7,6 +7,7 @@ type Habit = {
   UserID: number;
   Cadence: 'daily' | 'weekly' | 'monthly';
   Frequency: number;
+  completedCount: number;
 };
 
 export async function POST(request: Request) {
@@ -32,7 +33,26 @@ export async function POST(request: Request) {
 
 export async function GET() {
     try {
-      const result = await sql<Habit>`SELECT id, "Name", "UserID", "Cadence", "Frequency" FROM "Habits"`;
+      const result = await sql<Habit>`
+        SELECT
+            h.id,
+            h."Name",
+            h."UserID",
+            h."Cadence",
+            h."Frequency",
+            CAST( (
+                SELECT COUNT(*)
+                FROM "Actions" a
+                WHERE a."HabitID" = h.id AND
+                CASE
+                    WHEN h."Cadence" = 'daily' THEN a."LoggedAt" >= date_trunc('day', NOW())
+                    WHEN h."Cadence" = 'weekly' THEN a."LoggedAt" >= date_trunc('week', NOW())
+                    WHEN h."Cadence" = 'monthly' THEN a."LoggedAt" >= date_trunc('month', NOW())
+                    ELSE FALSE
+                END
+            ) AS INTEGER) as "completedCount"
+        FROM "Habits" h
+      `;
       const habits = result.rows;
   
       if (!habits || habits.length === 0) {

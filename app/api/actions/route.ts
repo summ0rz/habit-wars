@@ -35,17 +35,26 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const { HabitID, UserID } = await request.json();
+        const { HabitID, UserID, LoggedAt } = await request.json();
 
         if (!HabitID || !UserID) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
         }
 
-        const result = await sql`
-            INSERT INTO "Actions" ("HabitID", "UserID")
-            VALUES (${HabitID}, ${UserID})
-            RETURNING *;
-        `;
+        let result;
+        if (LoggedAt) {
+            result = await sql`
+                INSERT INTO "Actions" ("HabitID", "UserID", "LoggedAt")
+                VALUES (${HabitID}, ${UserID}, ${LoggedAt})
+                RETURNING *;
+            `;
+        } else {
+            result = await sql`
+                INSERT INTO "Actions" ("HabitID", "UserID")
+                VALUES (${HabitID}, ${UserID})
+                RETURNING *;
+            `;
+        }
 
         return NextResponse.json({ action: result.rows[0] }, { status: 201 });
     } catch (error) {

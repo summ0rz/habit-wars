@@ -35,6 +35,36 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
   const [isLogging, setIsLogging] = useState<number | null>(null);
   const router = useRouter();
 
+  const handleUnlogAction = async (habitId: number, userId: number) => {
+    setIsLogging(habitId);
+    try {
+      const res = await fetch('/api/actions', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          HabitID: habitId,
+          UserID: userId,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Something went wrong');
+      }
+      
+      window.dispatchEvent(new CustomEvent('actionAdded'));
+      router.refresh();
+
+    } catch (err) {
+      console.error(err);
+      // You might want to show an error to the user here
+    } finally {
+      setIsLogging(null);
+    }
+  };
+
   const handleLogAction = async (habitId: number, userId: number) => {
     setIsLogging(habitId);
     try {
@@ -89,13 +119,22 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
               <li key={habit.id} className="py-3 px-2">
                 <div className='flex justify-between items-center'>
                   <p className="text-lg font-medium">{habit.Name}</p>
-                  <button
-                    onClick={() => handleLogAction(habit.id, habit.UserID)}
-                    disabled={isLogging === habit.id}
-                    className="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-                  >
-                    {isLogging === habit.id ? 'Logging...' : 'Log'}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleUnlogAction(habit.id, habit.UserID)}
+                      disabled={isLogging === habit.id || habit.completedCount === 0}
+                      className="px-3 py-1 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                    >
+                      Unlog
+                    </button>
+                    <button
+                      onClick={() => handleLogAction(habit.id, habit.UserID)}
+                      disabled={isLogging === habit.id}
+                      className="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                    >
+                      {isLogging === habit.id ? '...' : 'Log'}
+                    </button>
+                  </div>
                 </div>
                 <ProgressMeter
                   currentValue={habit.completedCount}

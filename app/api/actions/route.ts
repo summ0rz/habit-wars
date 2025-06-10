@@ -52,4 +52,36 @@ export async function POST(request: Request) {
         console.error('Error creating action:', error);
         return NextResponse.json({ message: 'Error creating action' }, { status: 500 });
     }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        const { HabitID, UserID } = await request.json();
+
+        if (!HabitID || !UserID) {
+            return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+        }
+
+        // Find the most recent action and delete it
+        const result = await sql`
+            DELETE FROM "Actions"
+            WHERE id = (
+                SELECT id
+                FROM "Actions"
+                WHERE "HabitID" = ${HabitID} AND "UserID" = ${UserID}
+                ORDER BY "LoggedAt" DESC
+                LIMIT 1
+            )
+            RETURNING *;
+        `;
+
+        if (result.rowCount === 0) {
+            return NextResponse.json({ message: 'No action found to delete' }, { status: 404 });
+        }
+
+        return NextResponse.json({ action: result.rows[0] }, { status: 200 });
+    } catch (error) {
+        console.error('Error deleting action:', error);
+        return NextResponse.json({ message: 'Error deleting action' }, { status: 500 });
+    }
 } 

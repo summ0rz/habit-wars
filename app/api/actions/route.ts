@@ -22,7 +22,7 @@ export async function GET() {
                 u.name as "UserName"
             FROM "Actions" a
             JOIN "Habits" h ON a."HabitID" = h.id
-            JOIN "Users" u ON a."UserID" = u.id
+            JOIN "users" u ON a."UserID" = u.id
             ORDER BY a."LoggedAt" DESC;
         `;
         const actions = result.rows;

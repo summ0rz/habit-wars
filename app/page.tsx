@@ -7,6 +7,27 @@ export const metadata: Metadata = {
   title: 'Habit Wars',
 }
 
+async function getUserId(email: string | null | undefined): Promise<number | null> {
+  if (!email) {
+    return null;
+  }
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/users/find?email=${encodeURIComponent(email)}`);
+
+    if (!res.ok) {
+      if (res.status !== 404) {
+        console.error('Failed to fetch user ID:', await res.text());
+      }
+      return null;
+    }
+    const data = await res.json();
+    return data.id;
+  } catch (error) {
+    console.error('Error in getUserId:', error);
+    return null;
+  }
+}
 
 export default async function Home() {
   const session = await auth()
@@ -23,6 +44,17 @@ export default async function Home() {
       </div>
     )
   }
+
   console.log(session?.user?.email);
+
+  // TODO: Check if user has an account. If not, create one
+  // 1. Add DB method (API) that takes in email and returns user id
+  // 2. Pass user id to MainPage
+  // 3. Update MainPage to take in user id and only show habits for that user
+  // 4. Update all API calls to take in user id
+  // 5. Remove user dropdown from AddHabitForm
+  const userId = await getUserId(session?.user?.email);
+  console.log(userId);
+
   return <MainPage />
 }

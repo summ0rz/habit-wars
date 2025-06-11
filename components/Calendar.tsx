@@ -2,7 +2,25 @@
 
 import { useState } from 'react';
 
-export default function Calendar() {
+type Habit = {
+  id: number;
+  Name: string;
+  Color: string;
+};
+
+type Action = {
+  id: number;
+  HabitID: number;
+  UserID: number;
+  LoggedAt: string;
+};
+
+type CalendarProps = {
+  actions: Action[] | undefined;
+  habits: Habit[] | undefined;
+};
+
+export default function Calendar({ actions, habits }: CalendarProps) {
   const [date, setDate] = useState(new Date());
 
   const year = date.getFullYear();
@@ -19,6 +37,24 @@ export default function Calendar() {
   
   const calendarDays = [...leadingEmptyDays, ...days];
   const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const getActionsForDay = (day: number) => {
+    if (!actions || !day) return [];
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return actions.filter(a => a.LoggedAt && a.LoggedAt.startsWith(dateStr));
+  };
+
+  const getHabitColor = (habitId: number) => {
+    if (!habits) return '#808080'; // Default gray
+    const habit = habits.find(h => h.id === habitId);
+    return habit ? habit.Color : '#808080';
+  };
+
+  const getHabitName = (habitId: number) => {
+    if (!habits) return '';
+    const habit = habits.find(h => h.id === habitId);
+    return habit ? habit.Name : 'Unknown Habit';
+  };
 
   const goToPreviousMonth = () => {
     setDate(new Date(year, month - 1, 1));
@@ -49,11 +85,25 @@ export default function Calendar() {
           {weekdays.map(day => (
             <div key={day} className="font-semibold text-sm text-gray-600 dark:text-gray-400">{day}</div>
           ))}
-          {calendarDays.map((day, index) => (
-            <div key={index} className={`flex items-center justify-center h-10 w-10 rounded-full ${day ? 'text-gray-800 dark:text-gray-200' : ''} ${isToday(day!) ? 'bg-indigo-600 text-white' : ''}`}>
-              {day}
+          {calendarDays.map((day, index) => {
+            const dayActions = getActionsForDay(day!);
+            return (
+            <div key={index} className="flex flex-col items-center justify-start h-12 w-10">
+                <div className={`flex items-center justify-center h-8 w-8 rounded-full ${day ? 'text-gray-800 dark:text-gray-200' : ''} ${isToday(day!) ? 'bg-indigo-600 text-white' : ''}`}>
+                  {day}
+                </div>
+                <div className="flex -space-x-1 overflow-hidden mt-1 h-3">
+                    {dayActions.map(action => (
+                      <div 
+                        key={action.id} 
+                        className="w-3 h-3 rounded-full border border-white dark:border-gray-800" 
+                        style={{ backgroundColor: getHabitColor(action.HabitID) }}
+                        title={getHabitName(action.HabitID)}
+                      ></div>
+                    ))}
+                </div>
             </div>
-          ))}
+          )})}
         </div>
       </div>
     </section>

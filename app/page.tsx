@@ -51,9 +51,10 @@ export default async function Home() {
   // 1. Add DB method (API) that takes in email and returns user id
   // 2. Pass user id to MainPage
   // 3. Update MainPage to only show habits for the passed in user id
+  // 4. Remove user dropdown from AddHabitForm
   // -- DONE --
-  // 4. Update all API calls to take in user id
-  // 5. Remove user dropdown from AddHabitForm
+  // 5. Update all API calls to take in user id
+
   const userId = await getUserId(session?.user?.email);
   console.log(userId);
 

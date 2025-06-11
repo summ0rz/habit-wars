@@ -29,6 +29,17 @@ async function getUsers() {
     return res.json();
   }
   
+  async function getActions() {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/actions`, { cache: 'no-store' });
+  
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Failed to fetch actions:', errorText);
+      return { error: `Could not load actions. Status: ${res.status}` };
+    }
+    return res.json();
+  }
+  
   // Define a type for your user data for better type safety
   // This should match the type defined in your API route
   type User = {
@@ -48,25 +59,36 @@ type Habit = {
     Color: string;
   };
 
+type Action = {
+  id: number;
+  HabitID: number;
+  UserID: number;
+  LoggedAt: string;
+};
+
   export default async function MainPage({ userId }: MainPageProps) {
-    const [usersData, habitsData] = await Promise.all([
+    const [usersData, habitsData, actionsData] = await Promise.all([
         getUsers(),
-        getHabits(userId)
+        getHabits(userId),
+        getActions()
       ]);
     
       const users = !usersData.error ? (usersData?.users as User[] | undefined) : undefined;
       const habits = !habitsData.error ? (habitsData?.habits as Habit[] | undefined) : undefined;
-      console.log('Habits in MainPage:', habits);
+      const actions = !actionsData.error ? (actionsData?.actions as Action[] | undefined) : undefined;
+      
+      const userActions = actions?.filter(action => action.UserID === userId);
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-[family-name:var(--font-geist-sans)]">
           <main className="container mx-auto p-4 sm:p-8">
             <h1 className="text-4xl font-bold mb-16 text-center">Habit Wars</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <Calendar />
+              <Calendar actions={userActions} habits={habits} />
               {/* Display Habits List */}
               <HabitSection habits={habits} habitsData={habitsData} userId={userId} />
             </div>
-            <ActionLog userId={userId} />
+            <ActionLog userId={userId} actions={userActions} users={users} habits={habits} />
     
             {/* Display Users List */}
             <section className="mt-8">

@@ -1,58 +1,49 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 
-type ActionLogProps = {
-  userId: number;
+type User = {
+  id: number;
+  name: string;
+};
+
+type Habit = {
+  id: number;
+  Name: string;
 };
 
 type Action = {
-    id: number;
-    HabitName: string;
-    UserName: string;
-    LoggedAt: string;
-    UserID: number;
+  id: number;
+  HabitID: number;
+  UserID: number;
+  LoggedAt: string;
 };
 
-export default function ActionLog({ userId }: ActionLogProps) {
-    const [actions, setActions] = useState<Action[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+type ActionLogProps = {
+  userId: number;
+  actions: Action[] | undefined;
+  users: User[] | undefined;
+  habits: Habit[] | undefined;
+};
 
-    const fetchActions = useCallback(async () => {
-        try {
-            const res = await fetch(`/api/actions`);
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.message || 'Failed to fetch actions');
-            }
-            const data = await res.json();
-            setActions(data.actions);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unknown error occurred');
-        } finally {
-            setLoading(false);
-        }
+export default function ActionLog({ userId, actions, users, habits }: ActionLogProps) {
+    const [hydrated, setHydrated] = useState(false);
+    useEffect(() => {
+        setHydrated(true);
     }, []);
 
-    useEffect(() => {
-        fetchActions();
-        
-        const handleActionAdded = () => fetchActions();
-        window.addEventListener('actionAdded', handleActionAdded);
-
-        return () => {
-            window.removeEventListener('actionAdded', handleActionAdded);
-        };
-    }, [fetchActions]);
-
-    if (loading) {
+    if (!hydrated) {
         return <p className="text-center text-gray-500 dark:text-gray-400">Loading actions...</p>;
     }
 
-    if (error) {
-        return <p className="text-center text-red-500">{error}</p>;
+    if (!actions || !users || !habits) {
+        return <p className="text-center text-red-500">Could not load activity.</p>;
     }
+
+    const getEntityName = (id: number, entities: {id: number, name?: string, Name?: string}[]) => {
+        const entity = entities.find(e => e.id === id);
+        return entity?.name || entity?.Name || 'Unknown';
+      };
 
     return (
         <section className="mt-8">
@@ -62,7 +53,7 @@ export default function ActionLog({ userId }: ActionLogProps) {
                     {actions.map((action) => (
                         <li key={action.id} className="py-3 px-2">
                             <p className="text-lg font-medium">
-                                <span className="font-bold">{action.UserID === userId ? "You" : action.UserName}</span> completed <span className="font-bold">{action.HabitName}</span>
+                                <span className="font-bold">{action.UserID === userId ? "You" : getEntityName(action.UserID, users)}</span> completed <span className="font-bold">{getEntityName(action.HabitID, habits)}</span>
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 {new Date(action.LoggedAt).toLocaleString()}
@@ -71,7 +62,7 @@ export default function ActionLog({ userId }: ActionLogProps) {
                     ))}
                 </ul>
             ) : (
-                <p className="text-center text-gray-500 dark:text-gray-400">No actions logged yet.</p>
+                <p className="text-center text-gray-500 dark:text-gray-400">No recent activity.</p>
             )}
         </section>
     );

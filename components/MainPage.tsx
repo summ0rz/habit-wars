@@ -45,6 +45,7 @@ type Habit = {
     Cadence: 'daily' | 'weekly' | 'monthly';
     Frequency: number;
     completedCount: number;
+    Color: string;
   };
 
   export default async function MainPage({ userId }: MainPageProps) {
@@ -55,6 +56,7 @@ type Habit = {
     
       const users = !usersData.error ? (usersData?.users as User[] | undefined) : undefined;
       const habits = !habitsData.error ? (habitsData?.habits as Habit[] | undefined) : undefined;
+      console.log('Habits in MainPage:', habits);
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-[family-name:var(--font-geist-sans)]">
           <main className="container mx-auto p-4 sm:p-8">

@@ -13,6 +13,7 @@ type Habit = {
   Cadence: 'daily' | 'weekly' | 'monthly';
   Frequency: number;
   completedCount: number;
+  Color: string;
 };
 
 type HabitsData = {
@@ -126,7 +127,13 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
               {habits.map((habit) => (
                 <li key={habit.id} className="py-3 px-2">
                   <div className='flex justify-between items-center'>
-                    <p className="text-lg font-medium">{habit.Name}</p>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: habit.Color }}
+                      ></span>
+                      <p className="text-lg font-medium">{habit.Name}</p>
+                    </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleUnlogAction(habit.id, habit.UserID)}

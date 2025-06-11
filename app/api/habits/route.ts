@@ -8,19 +8,20 @@ type Habit = {
   Cadence: 'daily' | 'weekly' | 'monthly';
   Frequency: number;
   completedCount: number;
+  Color: string;
 };
 
 export async function POST(request: Request) {
   try {
-    const { Name, UserID, Cadence, Frequency } = await request.json();
+    const { Name, UserID, Cadence, Frequency, Color } = await request.json();
     
     if (!Name || !UserID || !Cadence || !Frequency) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
     const result = await sql`
-      INSERT INTO "Habits" ("Name", "UserID", "Cadence", "Frequency")
-      VALUES (${Name}, ${UserID}, ${Cadence}, ${Frequency})
+      INSERT INTO "Habits" ("Name", "UserID", "Cadence", "Frequency", "Color")
+      VALUES (${Name}, ${UserID}, ${Cadence}, ${Frequency}, ${Color || '#808080'})
       RETURNING *;
     `;
 
@@ -43,6 +44,7 @@ export async function GET(request: Request) {
             h."UserID",
             h."Cadence",
             h."Frequency",
+            h."Color",
             CAST( (
                 SELECT COUNT(*)
                 FROM "Actions" a

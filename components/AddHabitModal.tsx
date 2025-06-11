@@ -14,8 +14,11 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
     const [name, setName] = useState('');
     const [cadence, setCadence] = useState<'daily' | 'weekly' | 'monthly'>('daily');
     const [frequency, setFrequency] = useState(1);
+    const [color, setColor] = useState('#4ade80');
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const presetColors = ['#4ade80', '#facc15', '#fb923c', '#60a5fa', '#c084fc', '#f87171', '#808080'];
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -37,6 +40,7 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
                     UserID: userId,
                     Cadence: cadence,
                     Frequency: frequency,
+                    Color: color,
                 }),
             });
 
@@ -60,6 +64,7 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
             setName('');
             setCadence('daily');
             setFrequency(1);
+            setColor('#4ade80');
             setError(null);
             setIsSubmitting(false);
         }
@@ -130,6 +135,27 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
                                         -
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                        <div className="p-4 border rounded-lg border-gray-200 dark:border-gray-700">
+                            <label htmlFor="color" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Color</label>
+                            <div className="mt-2 flex items-center gap-2">
+                                {presetColors.map((presetColor) => (
+                                    <button
+                                        key={presetColor}
+                                        type="button"
+                                        className={`w-8 h-8 rounded-full border-2 ${color === presetColor ? 'border-indigo-500' : 'border-transparent'}`}
+                                        style={{ backgroundColor: presetColor }}
+                                        onClick={() => setColor(presetColor)}
+                                    />
+                                ))}
+                                <input
+                                    type="color"
+                                    value={color}
+                                    onChange={(e) => setColor(e.target.value)}
+                                    className="w-8 h-8 p-0 border-none rounded-full cursor-pointer"
+                                    title="Choose a color"
+                                />
                             </div>
                         </div>
                     </div>

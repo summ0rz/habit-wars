@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 type AddHabitModalProps = {
@@ -17,6 +17,7 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
     const [color, setColor] = useState('#4ade80');
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const colorInputRef = useRef<HTMLInputElement>(null);
 
     const presetColors = ['#4ade80', '#facc15', '#fb923c', '#60a5fa', '#c084fc', '#f87171', '#808080'];
 
@@ -144,18 +145,29 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
                                     <button
                                         key={presetColor}
                                         type="button"
-                                        className={`w-8 h-8 rounded-full border-2 ${color === presetColor ? 'border-indigo-500' : 'border-transparent'}`}
+                                        className={`w-8 h-8 rounded-full border-2 ${color === presetColor ? 'border-indigo-500' : 'border-transparent'} cursor-pointer`}
                                         style={{ backgroundColor: presetColor }}
                                         onClick={() => setColor(presetColor)}
                                     />
                                 ))}
                                 <input
+                                    ref={colorInputRef}
                                     type="color"
                                     value={color}
                                     onChange={(e) => setColor(e.target.value)}
-                                    className="w-8 h-8 p-0 border-none rounded-full cursor-pointer"
-                                    title="Choose a color"
+                                    className="w-10 h-10 p-0 border-none cursor-pointer self-center"
+                                    title="Choose a custom color"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => colorInputRef.current?.click()}
+                                    className="-ml-2 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none cursor-pointer"
+                                    title="Choose a custom color"
+                                >
+                                    <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M12 15a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -3,6 +3,10 @@ import ActionLog from '@/components/ActionLog'
 import Calendar from '@/components/Calendar'
 import Link from 'next/link'
 
+type MainPageProps = {
+  userId: number;
+}
+
 async function getUsers() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/users`, { cache: 'no-store' });
   
@@ -14,8 +18,8 @@ async function getUsers() {
     return res.json();
   }
   
-  async function getHabits() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/habits`, { cache: 'no-store' });
+  async function getHabits(userId: number) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/habits?userId=${userId}`, { cache: 'no-store' });
   
     if (!res.ok) {
       const errorText = await res.text();
@@ -43,10 +47,10 @@ type Habit = {
     completedCount: number;
   };
 
-  export default async function MainPage() {
+  export default async function MainPage({ userId }: MainPageProps) {
     const [usersData, habitsData] = await Promise.all([
         getUsers(),
-        getHabits()
+        getHabits(userId)
       ]);
     
       const users = !usersData.error ? (usersData?.users as User[] | undefined) : undefined;
@@ -60,7 +64,7 @@ type Habit = {
               {/* Display Habits List */}
               <HabitSection habits={habits} users={users} habitsData={habitsData} />
             </div>
-            <ActionLog />
+            <ActionLog userId={userId} />
     
             {/* Display Users List */}
             <section className="mt-8">

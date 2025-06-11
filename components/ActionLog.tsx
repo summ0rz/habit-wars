@@ -1,6 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+
+type ActionLogProps = {
+  userId: number;
+};
 
 type Action = {
     id: number;
@@ -9,14 +13,14 @@ type Action = {
     LoggedAt: string;
 };
 
-export default function ActionLog() {
+export default function ActionLog({ userId }: ActionLogProps) {
     const [actions, setActions] = useState<Action[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    async function fetchActions() {
+    const fetchActions = useCallback(async () => {
         try {
-            const res = await fetch('/api/actions');
+            const res = await fetch(`/api/actions?userId=${userId}`);
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData.message || 'Failed to fetch actions');
@@ -28,7 +32,7 @@ export default function ActionLog() {
         } finally {
             setLoading(false);
         }
-    }
+    }, [userId]);
 
     useEffect(() => {
         fetchActions();
@@ -39,7 +43,7 @@ export default function ActionLog() {
         return () => {
             window.removeEventListener('actionAdded', handleActionAdded);
         };
-    }, []);
+    }, [fetchActions]);
 
     if (loading) {
         return <p className="text-center text-gray-500 dark:text-gray-400">Loading actions...</p>;

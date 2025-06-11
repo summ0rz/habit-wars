@@ -10,9 +10,12 @@ type Action = {
     UserName: string;
 };
 
-export async function GET() {
+export async function GET(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+
     try {
-        const result = await sql<Action>`
+        const baseQuery = `
             SELECT
                 a.id,
                 a."HabitID",
@@ -23,9 +26,16 @@ export async function GET() {
             FROM "Actions" a
             JOIN "Habits" h ON a."HabitID" = h.id
             JOIN "users" u ON a."UserID" = u.id
-            ORDER BY a."LoggedAt" DESC;
         `;
-        const actions = result.rows;
+        
+        let result;
+        if (userId) {
+            result = await sql.query(`${baseQuery} WHERE a."UserID" = $1 ORDER BY a."LoggedAt" DESC`, [userId]);
+        } else {
+            result = await sql.query(`${baseQuery} ORDER BY a."LoggedAt" DESC`);
+        }
+        
+        const actions = result.rows as Action[];
         return NextResponse.json({ actions }, { status: 200 });
     } catch (error) {
         console.error('Error fetching actions:', error);

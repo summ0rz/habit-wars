@@ -50,11 +50,25 @@ export default async function Home() {
   // TODO: Check if user has an account. If not, create one
   // 1. Add DB method (API) that takes in email and returns user id
   // 2. Pass user id to MainPage
-  // 3. Update MainPage to take in user id and only show habits for that user
+  // 3. Update MainPage to only show habits for the passed in user id
+  // -- DONE --
   // 4. Update all API calls to take in user id
   // 5. Remove user dropdown from AddHabitForm
   const userId = await getUserId(session?.user?.email);
   console.log(userId);
 
-  return <MainPage />
+  if (!userId) {
+    return (
+      <div className="min-h-screen p-8 flex items-center justify-center">
+        <main className="max-w-4xl mx-auto">
+          <div className="flex flex-col items-center justify-center gap-4">
+            <h1 className="text-2xl font-bold">Account not found.</h1>
+            <p>Please contact support to have an account created.</p>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  return <MainPage userId={userId} />
 }

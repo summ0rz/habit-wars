@@ -1,6 +1,7 @@
 import HabitSection from '@/components/HabitSection'
 import ActionLog from '@/components/ActionLog'
 import Calendar from '@/components/Calendar'
+import Link from 'next/link'
 
 async function getUsers() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/users`, { cache: 'no-store' });
@@ -83,6 +84,12 @@ type Habit = {
                   </p>
                 )}
               </section>
+              <Link
+                href="/api/auth/signout"
+                className="text-sm text-red-500 hover:underline"
+              >
+                Sign out
+              </Link>
           </main>
         </div>
       );

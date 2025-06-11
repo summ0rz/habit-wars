@@ -36,8 +36,12 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 
+    if (!userId) {
+      return NextResponse.json({ message: 'Missing userId parameter' }, { status: 400 });
+    }
+
     try {
-      const baseQuery = `
+      const result = await sql`
         SELECT
             h.id,
             h."Name",
@@ -57,20 +61,10 @@ export async function GET(request: Request) {
                 END
             ) AS INTEGER) as "completedCount"
         FROM "Habits" h
+        WHERE h."UserID" = ${userId}
       `;
-
-      let result;
-      if (userId) {
-        result = await sql.query(`${baseQuery} WHERE h."UserID" = $1`, [userId]);
-      } else {
-        result = await sql.query(baseQuery);
-      }
       
       const habits = result.rows as Habit[];
-  
-      if (!habits) {
-        return NextResponse.json({ message: 'No habits found' }, { status: 404 });
-      }
   
       return NextResponse.json({ habits }, { status: 200 });
     } catch (error) {

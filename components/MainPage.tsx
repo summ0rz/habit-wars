@@ -29,8 +29,8 @@ async function getUsers() {
     return res.json();
   }
   
-  async function getActions() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/actions`, { cache: 'no-store' });
+  async function getActions(userId: number) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/actions?userId=${userId}`, { cache: 'no-store' });
   
     if (!res.ok) {
       const errorText = await res.text();
@@ -70,14 +70,14 @@ type Action = {
     const [usersData, habitsData, actionsData] = await Promise.all([
         getUsers(),
         getHabits(userId),
-        getActions()
+        getActions(userId)
       ]);
     
       const users = !usersData.error ? (usersData?.users as User[] | undefined) : undefined;
       const habits = !habitsData.error ? (habitsData?.habits as Habit[] | undefined) : undefined;
       const actions = !actionsData.error ? (actionsData?.actions as Action[] | undefined) : undefined;
       
-      const userActions = actions?.filter(action => action.UserID === userId);
+      const userActions = actions;
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-[family-name:var(--font-geist-sans)]">

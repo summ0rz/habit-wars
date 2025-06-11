@@ -52,8 +52,9 @@ export default async function Home() {
   // 2. Pass user id to MainPage
   // 3. Update MainPage to only show habits for the passed in user id
   // 4. Remove user dropdown from AddHabitForm
-  // -- DONE --
   // 5. Update all API calls to take in user id
+  // -- DONE --
+  // 6. Create an account for the user if none exists
 
   const userId = await getUserId(session?.user?.email);
   console.log(userId);

@@ -65,6 +65,29 @@ export default async function Home() {
           <HabitSection habits={habits} users={users} habitsData={habitsData} />
         </div>
         <ActionLog />
+
+        {/* Display Users List */}
+        <section className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Users</h2>
+            {usersData.error ? (
+              <p className="text-center text-red-500">{usersData.error}</p>
+            ) : users && users.length > 0 ? (
+              <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                {users.map((user) => (
+                  <li key={user.id} className="py-3 px-2">
+                    <div>
+                      <p className="text-lg font-medium">{user.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-center text-gray-500 dark:text-gray-400">
+                No users found.
+              </p>
+            )}
+          </section>
       </main>
     </div>
   );

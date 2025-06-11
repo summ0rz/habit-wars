@@ -11,6 +11,7 @@ type Action = {
     HabitName: string;
     UserName: string;
     LoggedAt: string;
+    UserID: number;
 };
 
 export default function ActionLog({ userId }: ActionLogProps) {
@@ -20,7 +21,7 @@ export default function ActionLog({ userId }: ActionLogProps) {
 
     const fetchActions = useCallback(async () => {
         try {
-            const res = await fetch(`/api/actions?userId=${userId}`);
+            const res = await fetch(`/api/actions`);
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData.message || 'Failed to fetch actions');
@@ -32,7 +33,7 @@ export default function ActionLog({ userId }: ActionLogProps) {
         } finally {
             setLoading(false);
         }
-    }, [userId]);
+    }, []);
 
     useEffect(() => {
         fetchActions();
@@ -61,7 +62,7 @@ export default function ActionLog({ userId }: ActionLogProps) {
                     {actions.map((action) => (
                         <li key={action.id} className="py-3 px-2">
                             <p className="text-lg font-medium">
-                                <span className="font-bold">{action.UserName}</span> completed <span className="font-bold">{action.HabitName}</span>
+                                <span className="font-bold">{action.UserID === userId ? "You" : action.UserName}</span> completed <span className="font-bold">{action.HabitName}</span>
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 {new Date(action.LoggedAt).toLocaleString()}

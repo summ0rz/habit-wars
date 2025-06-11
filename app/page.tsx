@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const session = await auth()
-  // console.log(process.env.GOOGLE_CLIENT_ID);
+
   if (!session) {
     return (
       <div className="min-h-screen p-8">
@@ -23,6 +23,6 @@ export default async function Home() {
       </div>
     )
   }
-  console.log(session);
+  console.log(session?.user?.email);
   return <MainPage />
 }

@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import HabitSection from '@/components/HabitSection'
 import ActionLog from '@/components/ActionLog'
 import Calendar from '@/components/Calendar'

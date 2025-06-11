@@ -34,8 +34,8 @@ export default function Calendar() {
   };
 
   return (
-    <section>
-      <div className="flex justify-between items-center mb-4">
+    <section className="h-full flex flex-col">
+      <div className="flex justify-between items-center mb-4 min-h-[40px]">
         <h2 className="text-2xl font-semibold">
           {date.toLocaleString('default', { month: 'long' })} {year}
         </h2>
@@ -44,7 +44,7 @@ export default function Calendar() {
           <button onClick={goToNextMonth} className="px-3 py-1 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600">&gt;</button>
         </div>
       </div>
-      <div className="bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex-grow">
         <div className="grid grid-cols-7 gap-2 text-center">
           {weekdays.map(day => (
             <div key={day} className="font-semibold text-sm text-gray-600 dark:text-gray-400">{day}</div>

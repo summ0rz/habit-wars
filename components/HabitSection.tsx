@@ -113,8 +113,8 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
 
   return (
     <>
-      <section>
-        <div className="flex justify-between items-center mb-4">
+      <section className="h-full flex flex-col">
+        <div className="flex justify-between items-center mb-4 min-h-[40px]">
           <h2 className="text-2xl font-semibold">Habits</h2>
           <button
             onClick={() => setShowForm(!showForm)}
@@ -126,11 +126,11 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
 
         {showForm && users && <AddHabitForm users={users} />}
 
-        <div className="mt-4">
+        <div className="flex-grow">
           {habitsData && 'error' in habitsData && habitsData.error ? (
-            <p className="text-center text-red-500 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4">{habitsData.error}</p>
+            <p className="text-center text-red-500 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 h-full flex items-center justify-center">{habitsData.error}</p>
           ) : habits && habits.length > 0 ? (
-            <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <ul className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700 h-full">
               {habits.map((habit) => (
                 <li key={habit.id} className="py-3 px-2">
                   <div className='flex justify-between items-center'>
@@ -161,7 +161,7 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
               ))}
             </ul>
           ) : (
-            <div className="text-center text-gray-500 dark:text-gray-400 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div className="text-center text-gray-500 dark:text-gray-400 bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700 h-full flex items-center justify-center">
               No habits found.
             </div>
           )}

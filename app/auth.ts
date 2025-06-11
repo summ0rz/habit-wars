@@ -2,10 +2,6 @@ import GoogleProvider from "next-auth/providers/google"
 import { AuthOptions } from "next-auth"
 import { getServerSession } from "next-auth/next"
 
-// Add debug logging
-console.log('AUTH_SECRET:', process.env.AUTH_SECRET ? 'Set' : 'Not set')
-console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL)
-
 export const authConfig: AuthOptions = {
   providers: [
     GoogleProvider({

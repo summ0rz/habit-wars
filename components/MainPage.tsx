@@ -62,7 +62,7 @@ type Habit = {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
               <Calendar />
               {/* Display Habits List */}
-              <HabitSection habits={habits} users={users} habitsData={habitsData} />
+              <HabitSection habits={habits} habitsData={habitsData} userId={userId} />
             </div>
             <ActionLog userId={userId} />
     

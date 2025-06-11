@@ -2,15 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AddHabitForm from './AddHabitForm';
 import ProgressMeter from './ProgressMeter';
 import LogActionModal from './LogActionModal';
-
-type User = {
-    id: number;
-    name: string;
-    email: string;
-};
+import AddHabitModal from './AddHabitModal';
 
 type Habit = {
   id: number;
@@ -27,12 +21,12 @@ type HabitsData = {
 
 type HabitSectionProps = {
   habits: Habit[] | undefined;
-  users: User[] | undefined;
   habitsData: HabitsData | null | { error: string };
+  userId: number;
 };
 
-export default function HabitSection({ habits, users, habitsData }: HabitSectionProps) {
-  const [showForm, setShowForm] = useState(false);
+export default function HabitSection({ habits, habitsData, userId }: HabitSectionProps) {
+  const [isAddHabitModalOpen, setIsAddHabitModalOpen] = useState(false);
   const [isLogging, setIsLogging] = useState<number | null>(null);
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,14 +111,12 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
         <div className="flex justify-between items-center mb-4 min-h-[40px]">
           <h2 className="text-2xl font-semibold">Habits</h2>
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => setIsAddHabitModalOpen(true)}
             className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            {showForm ? 'Cancel' : 'Add Habit'}
+            Add Habit
           </button>
         </div>
-
-        {showForm && users && <AddHabitForm users={users} />}
 
         <div className="flex-grow">
           {habitsData && 'error' in habitsData && habitsData.error ? (
@@ -176,6 +168,11 @@ export default function HabitSection({ habits, users, habitsData }: HabitSection
           isSubmitting={isLogging === selectedHabit.id}
         />
       )}
+      <AddHabitModal
+        isOpen={isAddHabitModalOpen}
+        onClose={() => setIsAddHabitModalOpen(false)}
+        userId={userId}
+      />
     </>
   );
 } 

@@ -15,6 +15,7 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
     const [cadence, setCadence] = useState<'daily' | 'weekly' | 'monthly'>('daily');
     const [frequency, setFrequency] = useState(1);
     const [color, setColor] = useState('#4ade80');
+    const [shuffledPresetColors, setShuffledPresetColors] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const colorInputRef = useRef<HTMLInputElement>(null);
@@ -62,10 +63,17 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
 
     useEffect(() => {
         if (isOpen) {
+            const array = [...presetColors];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            setShuffledPresetColors(array);
+            
             setName('');
             setCadence('daily');
             setFrequency(1);
-            setColor('#4ade80');
+            setColor(array[0]);
             setError(null);
             setIsSubmitting(false);
         }
@@ -100,7 +108,7 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
                                 id="cadence"
                                 value={cadence}
                                 onChange={(e) => setCadence(e.target.value as 'daily' | 'weekly' | 'monthly')}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 border p-2"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 border p-2 custom-select"
                                 required
                             >
                                 <option value="daily">Daily</option>
@@ -109,29 +117,34 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
                             </select>
                         </div>
                         <div className="p-4 border rounded-lg border-gray-200 dark:border-gray-700">
-                            <label htmlFor="frequency" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Frequency</label>
-                            <div className="mt-1 flex">
-                                <input
-                                    type="number"
-                                    id="frequency"
-                                    value={frequency}
-                                    onChange={(e) => setFrequency(parseInt(e.target.value, 10) || 1)}
-                                    min="1"
-                                    className="block w-full text-center rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 p-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none border-t border-b border-l"
-                                    required
-                                />
+                            <label htmlFor="frequency" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Goal</label>
+                            <div className="mt-1 flex items-stretch">
+                                <div className="flex items-center flex-grow rounded-l-md border border-r-0 border-gray-300 shadow-sm sm:text-sm dark:border-gray-600">
+                                    <input
+                                        type="number"
+                                        id="frequency"
+                                        value={frequency}
+                                        onChange={(e) => setFrequency(parseInt(e.target.value, 10) || 1)}
+                                        min="1"
+                                        className="block w-full text-center p-2 border-none bg-transparent focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        required
+                                    />
+                                    <span className="pr-3 text-gray-500 dark:text-gray-400">
+                                        /{cadence === 'daily' ? 'day' : cadence.slice(0, -2)}
+                                    </span>
+                                </div>
                                 <div className="flex flex-col">
                                     <button
                                         type="button"
                                         onClick={() => setFrequency(f => f + 1)}
-                                        className="px-3 py-0.15 border bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 rounded-tr-md"
+                                        className="px-3 flex-grow border-t border-r border-b bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 rounded-tr-md"
                                     >
                                         +
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setFrequency(f => Math.max(1, f - 1))}
-                                        className="px-3 py-0.15 border-l border-b border-r bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 rounded-br-md"
+                                        className="px-3 flex-grow border-b border-r bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 rounded-br-md"
                                     >
                                         -
                                     </button>
@@ -141,23 +154,37 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
                         <div className="p-4 border rounded-lg border-gray-200 dark:border-gray-700">
                             <label htmlFor="color" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Color</label>
                             <div className="mt-2 flex items-center gap-2">
-                                {presetColors.map((presetColor) => (
+                                {shuffledPresetColors.map((presetColor) => (
                                     <button
                                         key={presetColor}
                                         type="button"
-                                        className={`w-8 h-8 rounded-full border-2 ${color === presetColor ? 'border-indigo-500' : 'border-transparent'} cursor-pointer`}
+                                        className={`w-8 h-8 rounded-full border-3 ${color === presetColor ? 'border-indigo-500' : 'border-transparent'} cursor-pointer`}
                                         style={{ backgroundColor: presetColor }}
                                         onClick={() => setColor(presetColor)}
                                     />
                                 ))}
-                                <input
-                                    ref={colorInputRef}
-                                    type="color"
-                                    value={color}
-                                    onChange={(e) => setColor(e.target.value)}
-                                    className="w-10 h-10 p-0 border-none cursor-pointer self-center"
-                                    title="Choose a custom color"
-                                />
+                                <div className={`w-10 h-10 border-3 rounded overflow-hidden ${!shuffledPresetColors.includes(color) ? 'border-indigo-500' : 'border-transparent'}`}>
+                                    <input
+                                        ref={colorInputRef}
+                                        type="color"
+                                        value={color}
+                                        onChange={(e) => setColor(e.target.value)}
+                                        className="cursor-pointer"
+                                        style={{ 
+                                            width: 'calc(100% + 8px)',
+                                            height: 'calc(100% + 8px)',
+                                            margin: '-4px',
+                                            padding: 0,
+                                            border: 'none',
+                                            outline: 'none',
+                                            borderRadius: 0,
+                                            WebkitAppearance: 'none',
+                                            MozAppearance: 'none',
+                                            appearance: 'none'
+                                        }}
+                                        title="Choose a custom color"
+                                    />
+                                </div>
                                 <button
                                     type="button"
                                     onClick={() => colorInputRef.current?.click()}

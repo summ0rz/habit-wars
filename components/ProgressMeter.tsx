@@ -14,7 +14,7 @@ export default function ProgressMeter({ currentValue, maxValue, cadence }: Progr
       <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
         <span>Progress</span>
         <span>
-          {currentValue} / {maxValue} times this {cadence.slice(0, -2)}
+          {currentValue} / {maxValue} times {cadence === 'daily' ? 'today' : 'this ' + cadence.slice(0, -2)}
         </span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-1">

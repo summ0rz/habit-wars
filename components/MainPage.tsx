@@ -1,6 +1,7 @@
 import HabitSection from '@/components/HabitSection'
 import ActionLog from '@/components/ActionLog'
 import Calendar from '@/components/Calendar'
+import Navigation from '@/components/Navigation'
 import Link from 'next/link'
 
 type MainPageProps = {
@@ -82,7 +83,10 @@ type Action = {
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-[family-name:var(--font-geist-sans)]">
           <main className="container mx-auto p-4 sm:p-8">
-            <h1 className="text-4xl font-bold mb-16 text-center">Habit Wars</h1>
+            <div className="flex justify-between items-center mb-16">
+              <h1 className="text-4xl font-bold">Habit Wars</h1>
+              <Navigation />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
               <Calendar actions={userActions} habits={habits} />
               {/* Display Habits List */}
@@ -112,14 +116,6 @@ type Action = {
                   </p>
                 )}
               </section>
-              <div className="mt-8 flex justify-start">
-                <Link
-                  href="/api/auth/signout"
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                >
-                  Sign out
-                </Link>
-              </div>
           </main>
         </div>
       );

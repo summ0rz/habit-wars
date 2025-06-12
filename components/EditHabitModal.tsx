@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, FormEvent, useRef } from 'react';
+import { useState, useEffect, FormEvent, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
 type Habit = {
@@ -31,7 +31,10 @@ export default function EditHabitModal({ isOpen, onClose, habit }: EditHabitModa
     const [isDeleting, setIsDeleting] = useState(false);
     const colorInputRef = useRef<HTMLInputElement>(null);
 
-    const presetColors = ['#4ade80', '#facc15', '#fb923c', '#60a5fa', '#c084fc', '#f87171', '#808080'];
+    const presetColors = useMemo(() => [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD',
+        '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'
+    ], []);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -118,12 +121,12 @@ export default function EditHabitModal({ isOpen, onClose, habit }: EditHabitModa
             setName(habit.Name);
             setCadence(habit.Cadence);
             setFrequency(habit.Frequency);
-            setColor(habit.Color);
+            setColor(habit.Color || presetColors[Math.floor(Math.random() * presetColors.length)]);
             setError(null);
             setIsSubmitting(false);
             setIsDeleting(false);
         }
-    }, [isOpen, habit]);
+    }, [isOpen, habit, presetColors]);
 
     if (!isOpen || !habit) {
         return null;

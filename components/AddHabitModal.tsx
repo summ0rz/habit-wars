@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, FormEvent, useRef } from 'react';
+import { useState, useEffect, FormEvent, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
 type AddHabitModalProps = {
@@ -20,7 +20,10 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
     const [isSubmitting, setIsSubmitting] = useState(false);
     const colorInputRef = useRef<HTMLInputElement>(null);
 
-    const presetColors = ['#4ade80', '#facc15', '#fb923c', '#60a5fa', '#c084fc', '#f87171', '#808080'];
+    const presetColors = useMemo(() => [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD',
+        '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'
+    ], []);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -77,7 +80,7 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
             setError(null);
             setIsSubmitting(false);
         }
-    }, [isOpen]);
+    }, [isOpen, presetColors]);
 
     if (!isOpen) {
         return null;

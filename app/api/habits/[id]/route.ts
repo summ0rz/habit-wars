@@ -1,10 +1,16 @@
 import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+interface HabitData {
+  Name: string;
+  Cadence: 'daily' | 'weekly' | 'monthly';
+  Frequency: number;
+  Color: string;
+}
+
+async function updateHabit(habitId: string, data: HabitData) {
   try {
-    const habitId = params.id;
-    const { Name, Cadence, Frequency, Color } = await request.json();
+    const { Name, Cadence, Frequency, Color } = data;
     
     if (!Name || !Cadence || !Frequency) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
@@ -28,10 +34,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+async function deleteHabit(habitId: string) {
   try {
-    const habitId = params.id;
-
     // First delete all actions associated with this habit
     await sql`
       DELETE FROM "Actions" 
@@ -54,4 +58,13 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     console.error('Error deleting habit:', error);
     return NextResponse.json({ message: 'Error deleting habit' }, { status: 500 });
   }
+}
+
+export async function PUT(request: Request, context: { params: { id: string } }) {
+  const data = await request.json();
+  return updateHabit(context.params.id, data);
+}
+
+export async function DELETE(request: Request, context: { params: { id: string } }) {
+  return deleteHabit(context.params.id);
 } 

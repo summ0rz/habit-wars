@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import ProgressMeter from './ProgressMeter';
 import LogActionModal from './LogActionModal';
 import AddHabitModal from './AddHabitModal';
+import EditHabitModal from './EditHabitModal';
 
 type Habit = {
   id: number;
@@ -32,6 +33,8 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
 
   const handleUnlogAction = async (habitId: number, userId: number) => {
     setIsLogging(habitId);
@@ -106,6 +109,11 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
     }
   };
 
+  const openEditModal = (habit: Habit) => {
+    setEditingHabit(habit);
+    setIsEditModalOpen(true);
+  };
+
   return (
     <>
       <section className="h-full flex flex-col">
@@ -133,6 +141,16 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
                         style={{ backgroundColor: habit.Color }}
                       ></span>
                       <p className="text-lg font-medium">{habit.Name}</p>
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(habit)}
+                        className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none cursor-pointer"
+                        title="Edit habit"
+                      >
+                        <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                        </svg>
+                      </button>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -179,6 +197,11 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
         isOpen={isAddHabitModalOpen}
         onClose={() => setIsAddHabitModalOpen(false)}
         userId={userId}
+      />
+      <EditHabitModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        habit={editingHabit}
       />
     </>
   );

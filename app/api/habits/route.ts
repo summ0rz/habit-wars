@@ -55,7 +55,7 @@ export async function GET(request: Request) {
                 WHERE a."HabitID" = h.id AND
                 CASE
                     WHEN h."Cadence" = 'daily' THEN a."LoggedAt" >= date_trunc('day', NOW())
-                    WHEN h."Cadence" = 'weekly' THEN a."LoggedAt" >= date_trunc('week', NOW())
+                    WHEN h."Cadence" = 'weekly' THEN a."LoggedAt" >= date_trunc('week', NOW()) - interval '1 day'
                     WHEN h."Cadence" = 'monthly' THEN a."LoggedAt" >= date_trunc('month', NOW())
                     ELSE FALSE
                 END
@@ -65,7 +65,7 @@ export async function GET(request: Request) {
       `;
       
       const habits = result.rows as Habit[];
-  
+      console.log(habits);
       return NextResponse.json({ habits }, { status: 200 });
     } catch (error) {
         console.error('Error fetching habits:', error);

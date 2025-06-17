@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ProgressMeter from './ProgressMeter';
-import LogActionModal from './LogActionModal';
 import AddHabitModal from './AddHabitModal';
 import EditHabitModal from './EditHabitModal';
 
@@ -31,8 +30,6 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
   const [isAddHabitModalOpen, setIsAddHabitModalOpen] = useState(false);
   const [isLogging, setIsLogging] = useState<number | null>(null);
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
 
@@ -86,7 +83,6 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
         throw new Error(errorData.message || 'Something went wrong');
       }
       
-      setIsModalOpen(false);
       window.dispatchEvent(new CustomEvent('actionAdded'));
       router.refresh();
 
@@ -95,17 +91,6 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
       // You might want to show an error to the user here
     } finally {
       setIsLogging(null);
-    }
-  };
-
-  const openLogModal = (habit: Habit) => {
-    setSelectedHabit(habit);
-    setIsModalOpen(true);
-  };
-
-  const onModalSubmit = (loggedAt: string) => {
-    if (selectedHabit) {
-      handleLogAction(selectedHabit.id, selectedHabit.UserID, loggedAt);
     }
   };
 
@@ -161,7 +146,7 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
                         Unlog
                       </button>
                       <button
-                        onClick={() => openLogModal(habit)}
+                        onClick={() => handleLogAction(habit.id, habit.UserID)}
                         disabled={isLogging === habit.id}
                         className="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
                       >
@@ -184,15 +169,6 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
           )}
         </div>
       </section>
-      {selectedHabit && (
-        <LogActionModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={onModalSubmit}
-          habitName={selectedHabit.Name}
-          isSubmitting={isLogging === selectedHabit.id}
-        />
-      )}
       <AddHabitModal
         isOpen={isAddHabitModalOpen}
         onClose={() => setIsAddHabitModalOpen(false)}

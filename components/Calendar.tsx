@@ -1,19 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-type Habit = {
-  id: number;
-  Name: string;
-  Color: string;
-};
-
-type Action = {
-  id: number;
-  habit_id: number;
-  user_id: number;
-  logged_at: string;
-};
+import { Habit, Action } from '@/app/types';
 
 type CalendarProps = {
   actions: Action[] | undefined;
@@ -47,13 +35,13 @@ export default function Calendar({ actions, habits }: CalendarProps) {
   const getHabitColor = (habitId: number) => {
     if (!habits) return '#808080'; // Default gray
     const habit = habits.find(h => h.id === habitId);
-    return habit ? habit.Color : '#808080';
+    return habit ? habit.color : '#808080';
   };
 
   const getHabitName = (habitId: number) => {
     if (!habits) return '';
     const habit = habits.find(h => h.id === habitId);
-    return habit ? habit.Name : 'Unknown Habit';
+    return habit ? habit.name : 'Unknown Habit';
   };
 
   const goToPreviousMonth = () => {

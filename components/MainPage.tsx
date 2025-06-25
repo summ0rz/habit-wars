@@ -2,6 +2,7 @@ import HabitSection from '@/components/HabitSection'
 import ActionLog from '@/components/ActionLog'
 import Calendar from '@/components/Calendar'
 import Navigation from '@/components/Navigation'
+import { User, Habit, Action } from '@/app/types'
 
 type MainPageProps = {
   userId: number;
@@ -40,32 +41,6 @@ async function getUsers() {
     return res.json();
   }
   
-  // Define a type for your user data for better type safety
-  // This should match the type defined in your API route
-  type User = {
-    id: number;
-    name: string;
-    email: string;
-  };
-  
-
-type Habit = {
-    id: number;
-    Name: string;
-    UserID: number;
-    Cadence: 'daily' | 'weekly' | 'monthly';
-    Frequency: number;
-    completedCount: number;
-    Color: string;
-  };
-
-type Action = {
-  id: number;
-  HabitID: number;
-  UserID: number;
-  LoggedAt: string;
-};
-
   export default async function MainPage({ userId }: MainPageProps) {
     const [usersData, habitsData, actionsData] = await Promise.all([
         getUsers(),

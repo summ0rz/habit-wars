@@ -1,23 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
-type User = {
-  id: number;
-  name: string;
-};
-
-type Habit = {
-  id: number;
-  Name: string;
-};
-
-type Action = {
-  id: number;
-  habit_id: number;
-  user_id: number;
-  logged_at: string;
-};
+import { User, Habit, Action } from '@/app/types';
 
 type ActionLogProps = {
   userId: number;

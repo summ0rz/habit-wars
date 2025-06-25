@@ -5,16 +5,7 @@ import { useRouter } from 'next/navigation';
 import ProgressMeter from './ProgressMeter';
 import AddHabitModal from './AddHabitModal';
 import EditHabitModal from './EditHabitModal';
-
-type Habit = {
-  id: number;
-  name: string;
-  user_id: number;
-  cadence: 'daily' | 'weekly' | 'monthly';
-  frequency: number;
-  completed_count: number;
-  color: string;
-};
+import { Habit } from '@/app/types';
 
 type HabitsData = {
   habits: Habit[] | undefined;

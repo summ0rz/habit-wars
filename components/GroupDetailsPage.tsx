@@ -16,6 +16,7 @@ type Group = {
   id: number;
   name: string;
   description: string | null;
+  invite_code: string;
   created_at: string;
   created_by: number;
   member_count: number;
@@ -33,10 +34,21 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     fetchGroupDetails();
   }, [groupId]);
+
+  // Hide toast after 3 seconds
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   async function fetchGroupDetails() {
     try {
@@ -60,6 +72,14 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleInvite() {
+    if (!group) return;
+    
+    const inviteLink = `${window.location.origin}/groups/join/${group.invite_code}`;
+    await navigator.clipboard.writeText(inviteLink);
+    setShowToast(true);
   }
 
   if (loading) {
@@ -96,6 +116,12 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
 
   return (
     <main className="container mx-auto p-4 sm:p-8">
+      {showToast && (
+        <div className="fixed top-4 right-4 bg-purple-600 text-white px-4 py-2 rounded-md text-sm z-50 shadow-lg">
+          Invite link copied
+        </div>
+      )}
+      
       <div className="flex justify-between items-center mb-8">
         <button
           onClick={() => router.push('/groups')}
@@ -112,7 +138,7 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{group.name}</h1>
         <button
-          onClick={() => {/* TODO: Implement invite functionality */}}
+          onClick={handleInvite}
           className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
         >
           Invite Members

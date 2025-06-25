@@ -1,9 +1,9 @@
 CREATE TYPE cadence_enum AS ENUM ('daily', 'weekly', 'monthly');
 
-CREATE TABLE "Habits" (
-    "id" SERIAL PRIMARY KEY,
-    "Name" TEXT NOT NULL,
-    "UserID" INTEGER NOT NULL,
-    "Cadence" cadence_enum NOT NULL,
-    "Frequency" INTEGER NOT NULL
+CREATE TABLE habits (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
+    cadence cadence_enum NOT NULL,
+    frequency INTEGER NOT NULL
 ); 

@@ -10,18 +10,18 @@ export async function GET() {
     const groupsTable = await sql`
       SELECT column_name, data_type 
       FROM information_schema.columns 
-      WHERE table_name = 'Groups';
+      WHERE table_name = 'groups';
     `;
 
     // Check if GroupMembers table exists and get its structure
     const groupMembersTable = await sql`
       SELECT column_name, data_type 
       FROM information_schema.columns 
-      WHERE table_name = 'GroupMembers';
+      WHERE table_name = 'group_members';
     `;
 
     // Get count of groups
-    const groupCount = await sql`SELECT COUNT(*) FROM "Groups";`;
+    const groupCount = await sql`SELECT COUNT(*) FROM groups;`;
 
     return NextResponse.json({
       connection: 'success',

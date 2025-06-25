@@ -2,24 +2,24 @@ import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 
 interface HabitData {
-  Name: string;
-  Cadence: 'daily' | 'weekly' | 'monthly';
-  Frequency: number;
-  Color: string;
+  name: string;
+  cadence: 'daily' | 'weekly' | 'monthly';
+  frequency: number;
+  color: string;
 }
 
 async function updateHabit(habitId: string, data: HabitData) {
   try {
-    const { Name, Cadence, Frequency, Color } = data;
+    const { name, cadence, frequency, color } = data;
     
-    if (!Name || !Cadence || !Frequency) {
+    if (!name || !cadence || !frequency) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
     const result = await sql`
-      UPDATE "Habits" 
-      SET "Name" = ${Name}, "Cadence" = ${Cadence}, "Frequency" = ${Frequency}, "Color" = ${Color}
-      WHERE "id" = ${habitId}
+      UPDATE habits 
+      SET name = ${name}, cadence = ${cadence}, frequency = ${frequency}, color = ${color}
+      WHERE id = ${habitId}
       RETURNING *;
     `;
 
@@ -38,14 +38,14 @@ async function deleteHabit(habitId: string) {
   try {
     // First delete all actions associated with this habit
     await sql`
-      DELETE FROM "Actions" 
-      WHERE "HabitID" = ${habitId};
+      DELETE FROM actions 
+      WHERE habit_id = ${habitId};
     `;
 
     // Then delete the habit itself
     const result = await sql`
-      DELETE FROM "Habits" 
-      WHERE "id" = ${habitId}
+      DELETE FROM habits 
+      WHERE id = ${habitId}
       RETURNING *;
     `;
 

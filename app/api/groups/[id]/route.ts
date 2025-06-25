@@ -13,16 +13,16 @@ export async function GET(
     const groupResult = await sql`
       SELECT 
         g.id,
-        g."Name",
-        g."Description",
-        g."CreatedAt",
-        g."CreatedBy",
+        g.name,
+        g.description,
+        g.created_at,
+        g.created_by,
         (
           SELECT COUNT(*)
-          FROM "GroupMembers" gm2
-          WHERE gm2."GroupID" = g.id
-        ) as "MemberCount"
-      FROM "Groups" g
+          FROM group_members gm2
+          WHERE gm2.group_id = g.id
+        ) as member_count
+      FROM groups g
       WHERE g.id = ${groupId};
     `;
 
@@ -38,12 +38,12 @@ export async function GET(
         u.id,
         u.name,
         u.email,
-        gm."Role",
-        gm."JoinedAt"
-      FROM "GroupMembers" gm
-      JOIN "users" u ON gm."UserID" = u.id
-      WHERE gm."GroupID" = ${groupId}
-      ORDER BY gm."JoinedAt" ASC;
+        gm.role,
+        gm.joined_at
+      FROM group_members gm
+      JOIN users u ON gm.user_id = u.id
+      WHERE gm.group_id = ${groupId}
+      ORDER BY gm.joined_at ASC;
     `;
 
     return NextResponse.json({
@@ -73,10 +73,10 @@ export async function DELETE(
     }
 
     const adminCheck = await sql`
-      SELECT id FROM "GroupMembers"
-      WHERE "GroupID" = ${groupId}
-      AND "UserID" = ${parseInt(userId)}
-      AND "Role" = 'admin';
+      SELECT id FROM group_members
+      WHERE group_id = ${groupId}
+      AND user_id = ${parseInt(userId)}
+      AND role = 'admin';
     `;
 
     if (adminCheck.rows.length === 0) {
@@ -86,9 +86,9 @@ export async function DELETE(
       );
     }
 
-    // Delete the group (this will cascade to GroupMembers due to ON DELETE CASCADE)
+    // Delete the group (this will cascade to group_members due to ON DELETE CASCADE)
     await sql`
-      DELETE FROM "Groups"
+      DELETE FROM groups
       WHERE id = ${groupId};
     `;
 

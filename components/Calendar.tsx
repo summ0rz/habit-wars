@@ -10,9 +10,9 @@ type Habit = {
 
 type Action = {
   id: number;
-  HabitID: number;
-  UserID: number;
-  LoggedAt: string;
+  habit_id: number;
+  user_id: number;
+  logged_at: string;
 };
 
 type CalendarProps = {
@@ -41,7 +41,7 @@ export default function Calendar({ actions, habits }: CalendarProps) {
   const getActionsForDay = (day: number) => {
     if (!actions || !day) return [];
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return actions.filter(a => a.LoggedAt && a.LoggedAt.startsWith(dateStr));
+    return actions.filter(a => a.logged_at && a.logged_at.startsWith(dateStr));
   };
 
   const getHabitColor = (habitId: number) => {
@@ -97,8 +97,8 @@ export default function Calendar({ actions, habits }: CalendarProps) {
                       <div 
                         key={action.id} 
                         className="w-3 h-3 rounded-full border border-white dark:border-gray-800" 
-                        style={{ backgroundColor: getHabitColor(action.HabitID) }}
-                        title={getHabitName(action.HabitID)}
+                        style={{ backgroundColor: getHabitColor(action.habit_id) }}
+                        title={getHabitName(action.habit_id)}
                       ></div>
                     ))}
                 </div>

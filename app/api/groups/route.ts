@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
     // Create the group
     const groupResult = await sql`
-      INSERT INTO "Groups" ("Name", "Description", "CreatedBy")
+      INSERT INTO groups (name, description, created_by)
       VALUES (${Name}, ${Description}, ${CreatedBy})
       RETURNING *;
     `;
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
     // Add the creator as an admin member
     await sql`
-      INSERT INTO "GroupMembers" ("GroupID", "UserID", "Role")
+      INSERT INTO group_members (group_id, user_id, role)
       VALUES (${group.id}, ${CreatedBy}, 'admin');
     `;
 
@@ -63,20 +63,20 @@ export async function GET(request: Request) {
     const result = await sql`
       SELECT 
         g.id,
-        g."Name",
-        g."Description",
-        g."CreatedAt",
-        g."CreatedBy",
-        gm."Role",
+        g.name,
+        g.description,
+        g.created_at,
+        g.created_by,
+        gm.role,
         (
           SELECT COUNT(*)
-          FROM "GroupMembers" gm2
-          WHERE gm2."GroupID" = g.id
-        ) as "MemberCount"
-      FROM "Groups" g
-      JOIN "GroupMembers" gm ON g.id = gm."GroupID"
-      WHERE gm."UserID" = ${parseInt(userId)}
-      ORDER BY g."CreatedAt" DESC;
+          FROM group_members gm2
+          WHERE gm2.group_id = g.id
+        ) as member_count
+      FROM groups g
+      JOIN group_members gm ON g.id = gm.group_id
+      WHERE gm.user_id = ${parseInt(userId)}
+      ORDER BY g.created_at DESC;
     `;
     
     console.log('Query results:', result.rows);
@@ -91,7 +91,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ groups }, { status: 200 });
   } catch (error) {
     console.error('Error fetching groups:', error);
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Error fetching groups',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });

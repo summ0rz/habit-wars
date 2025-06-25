@@ -3,11 +3,11 @@ import { NextResponse } from 'next/server';
 
 type Action = {
     id: number;
-    HabitID: number;
-    UserID: number;
-    LoggedAt: string;
-    HabitName: string;
-    UserName: string;
+    habit_id: number;
+    user_id: number;
+    logged_at: string;
+    habit_name: string;
+    user_name: string;
 };
 
 export async function GET(request: Request) {
@@ -22,16 +22,16 @@ export async function GET(request: Request) {
         const result = await sql`
             SELECT
                 a.id,
-                a."HabitID",
-                a."UserID",
-                a."LoggedAt",
-                h."Name" as "HabitName",
-                u.name as "UserName"
-            FROM "Actions" a
-            JOIN "Habits" h ON a."HabitID" = h.id
-            JOIN "users" u ON a."UserID" = u.id
-            WHERE a."UserID" = ${userId}
-            ORDER BY a."LoggedAt" DESC
+                a.habit_id,
+                a.user_id,
+                a.logged_at,
+                h.name as habit_name,
+                u.name as user_name
+            FROM actions a
+            JOIN habits h ON a.habit_id = h.id
+            JOIN users u ON a.user_id = u.id
+            WHERE a.user_id = ${userId}
+            ORDER BY a.logged_at DESC
         `;
         
         const actions = result.rows as Action[];
@@ -44,23 +44,23 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
-        const { HabitID, UserID, LoggedAt } = await request.json();
+        const { habit_id, user_id, logged_at } = await request.json();
 
-        if (!HabitID || !UserID) {
+        if (!habit_id || !user_id) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
         }
 
         let result;
-        if (LoggedAt) {
+        if (logged_at) {
             result = await sql`
-                INSERT INTO "Actions" ("HabitID", "UserID", "LoggedAt")
-                VALUES (${HabitID}, ${UserID}, ${LoggedAt})
+                INSERT INTO actions (habit_id, user_id, logged_at)
+                VALUES (${habit_id}, ${user_id}, ${logged_at})
                 RETURNING *;
             `;
         } else {
             result = await sql`
-                INSERT INTO "Actions" ("HabitID", "UserID")
-                VALUES (${HabitID}, ${UserID})
+                INSERT INTO actions (habit_id, user_id)
+                VALUES (${habit_id}, ${user_id})
                 RETURNING *;
             `;
         }
@@ -74,20 +74,20 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
     try {
-        const { HabitID, UserID } = await request.json();
+        const { habit_id, user_id } = await request.json();
 
-        if (!HabitID || !UserID) {
+        if (!habit_id || !user_id) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
         }
 
         // Find the most recent action and delete it
         const result = await sql`
-            DELETE FROM "Actions"
+            DELETE FROM actions
             WHERE id = (
                 SELECT id
-                FROM "Actions"
-                WHERE "HabitID" = ${HabitID} AND "UserID" = ${UserID}
-                ORDER BY "LoggedAt" DESC
+                FROM actions
+                WHERE habit_id = ${habit_id} AND user_id = ${user_id}
+                ORDER BY logged_at DESC
                 LIMIT 1
             )
             RETURNING *;

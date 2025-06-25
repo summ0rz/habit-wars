@@ -3,25 +3,25 @@ import { NextResponse } from 'next/server';
 
 type Habit = {
   id: number;
-  Name: string;
-  UserID: number;
-  Cadence: 'daily' | 'weekly' | 'monthly';
-  Frequency: number;
-  completedCount: number;
-  Color: string;
+  name: string;
+  user_id: number;
+  cadence: 'daily' | 'weekly' | 'monthly';
+  frequency: number;
+  completed_count: number;
+  color: string;
 };
 
 export async function POST(request: Request) {
   try {
-    const { Name, UserID, Cadence, Frequency, Color } = await request.json();
+    const { name, user_id, cadence, frequency, color } = await request.json();
     
-    if (!Name || !UserID || !Cadence || !Frequency) {
+    if (!name || !user_id || !cadence || !frequency) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
     const result = await sql`
-      INSERT INTO "Habits" ("Name", "UserID", "Cadence", "Frequency", "Color")
-      VALUES (${Name}, ${UserID}, ${Cadence}, ${Frequency}, ${Color || '#808080'})
+      INSERT INTO habits (name, user_id, cadence, frequency, color)
+      VALUES (${name}, ${user_id}, ${cadence}, ${frequency}, ${color || '#808080'})
       RETURNING *;
     `;
 
@@ -44,24 +44,24 @@ export async function GET(request: Request) {
       const result = await sql`
         SELECT
             h.id,
-            h."Name",
-            h."UserID",
-            h."Cadence",
-            h."Frequency",
-            h."Color",
+            h.name,
+            h.user_id,
+            h.cadence,
+            h.frequency,
+            h.color,
             CAST( (
                 SELECT COUNT(*)
-                FROM "Actions" a
-                WHERE a."HabitID" = h.id AND
+                FROM actions a
+                WHERE a.habit_id = h.id AND
                 CASE
-                    WHEN h."Cadence" = 'daily' THEN a."LoggedAt" >= date_trunc('day', NOW())
-                    WHEN h."Cadence" = 'weekly' THEN a."LoggedAt" >= date_trunc('week', NOW()) - interval '1 day'
-                    WHEN h."Cadence" = 'monthly' THEN a."LoggedAt" >= date_trunc('month', NOW())
+                    WHEN h.cadence = 'daily' THEN a.logged_at >= date_trunc('day', NOW())
+                    WHEN h.cadence = 'weekly' THEN a.logged_at >= date_trunc('week', NOW()) - interval '1 day'
+                    WHEN h.cadence = 'monthly' THEN a.logged_at >= date_trunc('month', NOW())
                     ELSE FALSE
                 END
-            ) AS INTEGER) as "completedCount"
-        FROM "Habits" h
-        WHERE h."UserID" = ${userId}
+            ) AS INTEGER) as completed_count
+        FROM habits h
+        WHERE h.user_id = ${userId}
       `;
       
       const habits = result.rows as Habit[];

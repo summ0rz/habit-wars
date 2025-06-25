@@ -6,12 +6,12 @@ import Navigation from '@/components/Navigation';
 
 type Group = {
   id: number;
-  Name: string;
-  Description: string | null;
-  CreatedAt: string;
-  CreatedBy: number; // user id
-  MemberCount: number;
-  Role: string;
+  name: string;
+  description: string | null;
+  created_at: string;
+  created_by: number; // user id
+  member_count: number;
+  role: string;
 };
 
 type GroupsPageProps = {
@@ -38,13 +38,14 @@ export default function GroupsPage({ userId }: GroupsPageProps) {
     try {
       const res = await fetch(`/api/groups?userId=${userId}`);
       if (!res.ok) {
-        throw new Error('Failed to fetch groups');
+        const errorData = await res.json();
+        throw new Error(errorData.details || errorData.message || 'Failed to fetch groups');
       }
       const data = await res.json();
       setGroups(data.groups);
       setError(null);
     } catch (err) {
-      setError('Failed to load groups. Please try again later.');
+      setError(err instanceof Error ? err.message : 'Failed to load groups. Please try again later.');
       console.error('Error fetching groups:', err);
     } finally {
       setLoading(false);
@@ -62,7 +63,7 @@ export default function GroupsPage({ userId }: GroupsPageProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newGroupData,
-          CreatedBy: userId,
+          created_by: userId,
         }),
       });
 
@@ -136,15 +137,15 @@ export default function GroupsPage({ userId }: GroupsPageProps) {
                 className="bg-white dark:bg-black/[.1] shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
                 onClick={() => router.push(`/groups/${group.id}`)}
               >
-                <h3 className="text-xl font-semibold mb-2">{group.Name}</h3>
-                {group.Description && (
+                <h3 className="text-xl font-semibold mb-2">{group.name}</h3>
+                {group.description && (
                   <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                    {group.Description}
+                    {group.description}
                   </p>
                 )}
                 <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
-                  <span>{group.MemberCount} members</span>
-                  <span className="capitalize">{group.Role}</span>
+                  <span>{group.member_count} members</span>
+                  <span className="capitalize">{group.role}</span>
                 </div>
               </div>
             ))}

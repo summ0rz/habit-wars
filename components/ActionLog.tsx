@@ -14,9 +14,9 @@ type Habit = {
 
 type Action = {
   id: number;
-  HabitID: number;
-  UserID: number;
-  LoggedAt: string;
+  habit_id: number;
+  user_id: number;
+  logged_at: string;
 };
 
 type ActionLogProps = {
@@ -53,10 +53,10 @@ export default function ActionLog({ userId, actions, users, habits }: ActionLogP
                     {actions.map((action) => (
                         <li key={action.id} className="py-3 px-2">
                             <p className="text-lg font-medium">
-                                <span className="font-bold">{action.UserID === userId ? "You" : getEntityName(action.UserID, users)}</span> completed <span className="font-bold">{getEntityName(action.HabitID, habits)}</span>
+                                <span className="font-bold">{action.user_id === userId ? "You" : getEntityName(action.user_id, users)}</span> completed <span className="font-bold">{getEntityName(action.habit_id, habits)}</span>
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {new Date(action.LoggedAt).toLocaleString()}
+                                {new Date(action.logged_at).toLocaleString()}
                             </p>
                         </li>
                     ))}

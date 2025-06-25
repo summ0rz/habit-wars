@@ -8,12 +8,12 @@ import EditHabitModal from './EditHabitModal';
 
 type Habit = {
   id: number;
-  Name: string;
-  UserID: number;
-  Cadence: 'daily' | 'weekly' | 'monthly';
-  Frequency: number;
-  completedCount: number;
-  Color: string;
+  name: string;
+  user_id: number;
+  cadence: 'daily' | 'weekly' | 'monthly';
+  frequency: number;
+  completed_count: number;
+  color: string;
 };
 
 type HabitsData = {
@@ -42,8 +42,8 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          HabitID: habitId,
-          UserID: userId,
+          habit_id: habitId,
+          user_id: userId,
         }),
       });
 
@@ -72,9 +72,9 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          HabitID: habitId,
-          UserID: userId,
-          LoggedAt: loggedAt,
+          habit_id: habitId,
+          user_id: userId,
+          logged_at: loggedAt,
         }),
       });
 
@@ -123,9 +123,9 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
                     <div className="flex items-center gap-2">
                       <span
                         className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: habit.Color }}
+                        style={{ backgroundColor: habit.color }}
                       ></span>
-                      <p className="text-lg font-medium">{habit.Name}</p>
+                      <p className="text-lg font-medium">{habit.name}</p>
                       <button
                         type="button"
                         onClick={() => openEditModal(habit)}
@@ -139,14 +139,14 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleUnlogAction(habit.id, habit.UserID)}
-                        disabled={isLogging === habit.id || habit.completedCount === 0}
+                        onClick={() => handleUnlogAction(habit.id, habit.user_id)}
+                        disabled={isLogging === habit.id || habit.completed_count === 0}
                         className="px-3 py-1 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
                       >
                         Unlog
                       </button>
                       <button
-                        onClick={() => handleLogAction(habit.id, habit.UserID)}
+                        onClick={() => handleLogAction(habit.id, habit.user_id)}
                         disabled={isLogging === habit.id}
                         className="px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
                       >
@@ -155,9 +155,9 @@ export default function HabitSection({ habits, habitsData, userId }: HabitSectio
                     </div>
                   </div>
                   <ProgressMeter
-                    currentValue={habit.completedCount}
-                    maxValue={habit.Frequency}
-                    cadence={habit.Cadence}
+                    currentValue={habit.completed_count}
+                    maxValue={habit.frequency}
+                    cadence={habit.cadence}
                   />
                 </li>
               ))}

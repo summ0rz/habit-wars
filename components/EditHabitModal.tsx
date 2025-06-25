@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation';
 
 type Habit = {
   id: number;
-  Name: string;
-  UserID: number;
-  Cadence: 'daily' | 'weekly' | 'monthly';
-  Frequency: number;
-  completedCount: number;
-  Color: string;
+  name: string;
+  user_id: number;
+  cadence: 'daily' | 'weekly' | 'monthly';
+  frequency: number;
+  completed_count: number;
+  color: string;
 };
 
 type EditHabitModalProps = {
@@ -54,10 +54,10 @@ export default function EditHabitModal({ isOpen, onClose, habit }: EditHabitModa
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    Name: name,
-                    Cadence: cadence,
-                    Frequency: frequency,
-                    Color: color,
+                    name: name,
+                    cadence: cadence,
+                    frequency: frequency,
+                    color: color,
                 }),
             });
 
@@ -80,7 +80,7 @@ export default function EditHabitModal({ isOpen, onClose, habit }: EditHabitModa
         if (!habit) return;
         
         const confirmDelete = window.confirm(
-            `Are you sure you want to delete "${habit.Name}"? This will permanently delete the habit and all its historical actions. This action cannot be undone.`
+            `Are you sure you want to delete "${habit.name}"? This will permanently delete the habit and all its historical actions. This action cannot be undone.`
         );
         
         if (!confirmDelete) return;
@@ -118,10 +118,10 @@ export default function EditHabitModal({ isOpen, onClose, habit }: EditHabitModa
             setShuffledPresetColors(array);
             
             // Pre-populate form with habit data
-            setName(habit.Name);
-            setCadence(habit.Cadence);
-            setFrequency(habit.Frequency);
-            setColor(habit.Color || presetColors[Math.floor(Math.random() * presetColors.length)]);
+            setName(habit.name);
+            setCadence(habit.cadence);
+            setFrequency(habit.frequency);
+            setColor(habit.color || presetColors[Math.floor(Math.random() * presetColors.length)]);
             setError(null);
             setIsSubmitting(false);
             setIsDeleting(false);

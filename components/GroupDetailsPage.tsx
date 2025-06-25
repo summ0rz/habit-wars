@@ -8,17 +8,17 @@ type Member = {
   id: number;
   name: string;
   email: string;
-  Role: string;
-  JoinedAt: string;
+  role: string;
+  joined_at: string;
 };
 
 type Group = {
   id: number;
-  Name: string;
-  Description: string | null;
-  CreatedAt: string;
-  CreatedBy: number;
-  MemberCount: number;
+  name: string;
+  description: string | null;
+  created_at: string;
+  created_by: number;
+  member_count: number;
 };
 
 type GroupDetailsPageProps = {
@@ -51,7 +51,7 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
       
       // Find the current user's role in the group
       const currentMember = data.members.find((m: Member) => m.id === userId);
-      setUserRole(currentMember?.Role || null);
+      setUserRole(currentMember?.role || null);
       
       setError(null);
     } catch (err) {
@@ -109,15 +109,23 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
         <Navigation />
       </div>
 
-      <h1 className="text-3xl font-bold mb-6">{group.Name}</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">{group.name}</h1>
+        <button
+          onClick={() => {/* TODO: Implement invite functionality */}}
+          className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+        >
+          Invite Members
+        </button>
+      </div>
 
       <div className="bg-white dark:bg-black/[.1] shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700 mb-8">
-        {group.Description && (
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{group.Description}</p>
+        {group.description && (
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{group.description}</p>
         )}
         <div className="text-sm text-gray-500 dark:text-gray-400">
-          <p>Created {new Date(group.CreatedAt).toLocaleDateString()}</p>
-          <p>{group.MemberCount} members</p>
+          <p>Created {new Date(group.created_at).toLocaleDateString()}</p>
+          <p>{group.member_count} members</p>
           {userRole && <p>Your role: <span className="capitalize">{userRole}</span></p>}
         </div>
       </div>
@@ -134,12 +142,12 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
                   </div>
                   <div className="flex items-center">
                     <span className="px-2 py-1 text-sm capitalize bg-gray-100 dark:bg-gray-700 rounded">
-                      {member.Role}
+                      {member.role}
                     </span>
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Joined {new Date(member.JoinedAt).toLocaleDateString()}
+                  Joined {new Date(member.joined_at).toLocaleDateString()}
                 </p>
               </li>
             ))}

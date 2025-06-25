@@ -41,11 +41,11 @@ export default function AddHabitModal({ isOpen, onClose, userId }: AddHabitModal
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    Name: name,
-                    UserID: userId,
-                    Cadence: cadence,
-                    Frequency: frequency,
-                    Color: color,
+                    name: name,
+                    user_id: userId,
+                    cadence: cadence,
+                    frequency: frequency,
+                    color: color,
                 }),
             });
 

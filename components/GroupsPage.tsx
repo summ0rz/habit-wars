@@ -25,8 +25,8 @@ export default function GroupsPage({ userId }: GroupsPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newGroupData, setNewGroupData] = useState({
-    Name: '',
-    Description: '',
+    name: '',
+    description: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -73,7 +73,7 @@ export default function GroupsPage({ userId }: GroupsPageProps) {
       }
 
       setIsCreateModalOpen(false);
-      setNewGroupData({ Name: '', Description: '' });
+      setNewGroupData({ name: '', description: '' });
       fetchGroups();
       router.refresh();
     } catch (err) {
@@ -166,8 +166,8 @@ export default function GroupsPage({ userId }: GroupsPageProps) {
                 <input
                   type="text"
                   id="name"
-                  value={newGroupData.Name}
-                  onChange={(e) => setNewGroupData({ ...newGroupData, Name: e.target.value })}
+                  value={newGroupData.name}
+                  onChange={(e) => setNewGroupData({ ...newGroupData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700"
                   required
                   disabled={isSubmitting}
@@ -179,8 +179,8 @@ export default function GroupsPage({ userId }: GroupsPageProps) {
                 </label>
                 <textarea
                   id="description"
-                  value={newGroupData.Description}
-                  onChange={(e) => setNewGroupData({ ...newGroupData, Description: e.target.value })}
+                  value={newGroupData.description}
+                  onChange={(e) => setNewGroupData({ ...newGroupData, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700"
                   rows={3}
                   disabled={isSubmitting}

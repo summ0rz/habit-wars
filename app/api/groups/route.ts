@@ -3,27 +3,55 @@ import { NextResponse } from 'next/server';
 
 type Group = {
   id: number;
-  Name: string;
-  Description: string | null;
-  CreatedAt: string;
-  CreatedBy: number;
-  MemberCount: number;
-  Role: string;
+  name: string;
+  description: string | null;
+  invite_code: string;
+  created_at: string;
+  created_by: number;
+  member_count: number;
+  role: string;
 };
+
+async function generateUniqueInviteCode(): Promise<string> {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let isUnique = false;
+  let inviteCode = '';
+
+  while (!isUnique) {
+    // Generate a random 6-letter code
+    inviteCode = Array.from(
+      { length: 6 },
+      () => characters[Math.floor(Math.random() * characters.length)]
+    ).join('');
+
+    // Check if the code already exists
+    const result = await sql`
+      SELECT id FROM groups WHERE invite_code = ${inviteCode};
+    `;
+
+    if (result.rows.length === 0) {
+      isUnique = true;
+    }
+  }
+
+  return inviteCode;
+}
 
 // Create a new group
 export async function POST(request: Request) {
   try {
-    const { Name, Description, CreatedBy } = await request.json();
+    const { name, description, created_by } = await request.json();
     
-    if (!Name || !CreatedBy) {
+    if (!name || !created_by) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
+    const inviteCode = await generateUniqueInviteCode();
+
     // Create the group
     const groupResult = await sql`
-      INSERT INTO groups (name, description, created_by)
-      VALUES (${Name}, ${Description}, ${CreatedBy})
+      INSERT INTO groups (name, description, created_by, invite_code)
+      VALUES (${name}, ${description}, ${created_by}, ${inviteCode})
       RETURNING *;
     `;
 
@@ -32,7 +60,7 @@ export async function POST(request: Request) {
     // Add the creator as an admin member
     await sql`
       INSERT INTO group_members (group_id, user_id, role)
-      VALUES (${group.id}, ${CreatedBy}, 'admin');
+      VALUES (${group.id}, ${created_by}, 'admin');
     `;
 
     return NextResponse.json({ group }, { status: 201 });

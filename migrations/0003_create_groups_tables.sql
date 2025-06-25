@@ -2,6 +2,7 @@ CREATE TABLE groups (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
+    invite_code CHAR(6) NOT NULL UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     created_by INTEGER NOT NULL REFERENCES users(id)
 );

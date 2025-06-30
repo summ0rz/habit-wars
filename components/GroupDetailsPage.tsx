@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import GroupCalendar from '@/components/GroupCalendar';
 import GroupHabitSection from '@/components/GroupHabitSection';
+import RecentActivity from '@/components/RecentActivity';
 
 type Member = {
   id: number;
@@ -163,7 +164,12 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
       </div>
 
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">{group.name}</h1>
+        <div>
+          <h1 className="text-3xl font-bold mb-2">{group.name}</h1>
+          {group.description && (
+            <p className="text-gray-600 dark:text-gray-400">{group.description}</p>
+          )}
+        </div>
         <button
           onClick={handleInvite}
           className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
@@ -172,41 +178,13 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
         </button>
       </div>
 
-      {group.description && (
-        <div className="bg-white dark:bg-black/[.1] shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700 mb-8">
-          <p className="text-gray-600 dark:text-gray-400">{group.description}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div className="space-y-8">
+          <GroupCalendar actions={actions} />
+          <RecentActivity actions={actions} />
         </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-8">
-        <GroupCalendar actions={actions} />
         <GroupHabitSection groupId={groupId} />
       </div>
-
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">Members</h2>
-        <div className="bg-white dark:bg-black/[.1] shadow-md rounded-lg border border-gray-200 dark:border-gray-700">
-          <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-            {members.map((member) => (
-              <li key={member.id} className="p-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="text-lg font-medium">{member.name}</h3>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="px-2 py-1 text-sm capitalize bg-gray-100 dark:bg-gray-700 rounded">
-                      {member.role}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Joined {new Date(member.joined_at).toLocaleDateString()}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
     </main>
   );
 } 

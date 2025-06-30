@@ -15,6 +15,7 @@ export async function GET(
         g.id,
         g.name,
         g.description,
+        g.invite_code,
         g.created_at,
         g.created_by,
         (

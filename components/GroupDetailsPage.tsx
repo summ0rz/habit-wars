@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
+import GroupCalendar from '@/components/GroupCalendar';
+import GroupHabitSection from '@/components/GroupHabitSection';
 
 type Member = {
   id: number;
@@ -22,6 +24,16 @@ type Group = {
   member_count: number;
 };
 
+type GroupAction = {
+  id: number;
+  habit_id: number;
+  logged_at: string;
+  user_id: number;
+  user_name: string;
+  habit_name: string;
+  habit_color: string;
+};
+
 type GroupDetailsPageProps = {
   userId: number;
   groupId: number;
@@ -31,13 +43,14 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
   const router = useRouter();
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
+  const [actions, setActions] = useState<GroupAction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    fetchGroupDetails();
+    Promise.all([fetchGroupDetails(), fetchGroupActions()]);
   }, [groupId]);
 
   // Hide toast after 3 seconds
@@ -71,6 +84,19 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
       console.error('Error fetching group details:', err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchGroupActions() {
+    try {
+      const res = await fetch(`/api/groups/${groupId}/actions`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch group actions');
+      }
+      const data = await res.json();
+      setActions(data.actions);
+    } catch (err) {
+      console.error('Error fetching group actions:', err);
     }
   }
 
@@ -146,15 +172,15 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
         </button>
       </div>
 
-      <div className="bg-white dark:bg-black/[.1] shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700 mb-8">
-        {group.description && (
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{group.description}</p>
-        )}
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          <p>Created {new Date(group.created_at).toLocaleDateString()}</p>
-          <p>{group.member_count} members</p>
-          {userRole && <p>Your role: <span className="capitalize">{userRole}</span></p>}
+      {group.description && (
+        <div className="bg-white dark:bg-black/[.1] shadow-md rounded-lg p-6 border border-gray-200 dark:border-gray-700 mb-8">
+          <p className="text-gray-600 dark:text-gray-400">{group.description}</p>
         </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-8">
+        <GroupCalendar actions={actions} />
+        <GroupHabitSection groupId={groupId} />
       </div>
 
       <section>

@@ -65,15 +65,25 @@ export default function GroupCalendar({ actions }: GroupCalendarProps) {
         </div>
       </div>
       <div className="bg-white dark:bg-black/[.1] shadow-md rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex-grow">
-        <div className="grid grid-cols-7 gap-2 text-center">
+        <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
           {weekdays.map(day => (
-            <div key={day} className="font-semibold text-sm text-gray-600 dark:text-gray-400">{day}</div>
+            <div key={day} className="font-semibold text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-black/[.1] p-2">{day}</div>
           ))}
           {calendarDays.map((day, index) => {
             const dayActions = getActionsForDay(day!);
             return (
-              <div key={index} className="flex flex-col items-center justify-start h-12 w-10">
-                <div className={`flex items-center justify-center h-8 w-8 rounded-full ${day ? 'text-gray-800 dark:text-gray-200' : ''} ${isToday(day!) ? 'bg-indigo-600 text-white' : ''}`}>
+              <div 
+                key={index} 
+                className={`flex flex-col items-center justify-start min-h-[4rem] p-1 bg-white dark:bg-black/[.1] ${
+                  !day ? 'bg-gray-50 dark:bg-black/[.2]' : ''
+                }`}
+              >
+                <div className={`
+                  flex items-center justify-center h-8 w-8 rounded-full 
+                  ${day ? 'text-gray-800 dark:text-gray-200' : ''} 
+                  ${isToday(day!) ? 'bg-indigo-600 text-white' : ''}
+                  ${day && !isToday(day!) ? 'hover:bg-gray-100 dark:hover:bg-gray-800' : ''}
+                `}>
                   {day}
                 </div>
                 <div className="flex -space-x-1 overflow-hidden mt-1 h-3">

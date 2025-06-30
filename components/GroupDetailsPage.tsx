@@ -77,7 +77,8 @@ export default function GroupDetailsPage({ userId, groupId }: GroupDetailsPagePr
   async function handleInvite() {
     if (!group) return;
     
-    const inviteLink = `${window.location.origin}/groups/join/${group.invite_code}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://habit-wars.vercel.app';
+    const inviteLink = `${baseUrl}/groups/join/${group.invite_code}`;
     await navigator.clipboard.writeText(inviteLink);
     setShowToast(true);
   }

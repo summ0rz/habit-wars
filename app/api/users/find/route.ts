@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await sql<{ id: number }>`SELECT id FROM "users" WHERE email = ${email}`;
+    const result = await sql<{ id: number }>`SELECT id FROM "users" WHERE email ilike ${email}`;
     
     if (result.rowCount === 0) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
